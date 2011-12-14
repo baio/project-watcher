@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project-Watcher", "Project-Watcher.csproj", "{FD1CE9E9-75DC-4A77-BA23-44A8CC44DCDB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD1CE9E9-75DC-4A77-BA23-44A8CC44DCDB}.Debug|x86.ActiveCfg = Debug|x86
+		{FD1CE9E9-75DC-4A77-BA23-44A8CC44DCDB}.Debug|x86.Build.0 = Debug|x86
+		{FD1CE9E9-75DC-4A77-BA23-44A8CC44DCDB}.Release|x86.ActiveCfg = Release|x86
+		{FD1CE9E9-75DC-4A77-BA23-44A8CC44DCDB}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
