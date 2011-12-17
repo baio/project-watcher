@@ -148,6 +148,7 @@ namespace Project_Watcher
         {
             if (!CheckFileExt(FileName)) return;
 
+            /*
             if (RebuildType == Program.RebuildType.Changed)
             {
                 if (_doubledFlag)
@@ -161,6 +162,7 @@ namespace Project_Watcher
                     _doubledFlag = true;
                 }
             }
+             */
 
             string localName = destPath + FileName.Replace(srcPath, "");
 
