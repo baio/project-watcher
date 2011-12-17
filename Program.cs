@@ -26,10 +26,11 @@ namespace Project_Watcher
             srcPath = System.IO.Path.GetFullPath(srcPath) + "\\";
             destPath =  System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), destPath)) + "\\";
             watcher.Path = srcPath;
-            watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.Size;
+            watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.Size;
             watcher.Changed += new FileSystemEventHandler(watcher_Changed);
-            //watcher.Deleted += new FileSystemEventHandler(watcher_Deleted);
+            watcher.Deleted += new FileSystemEventHandler(watcher_Deleted);
             watcher.Created += new FileSystemEventHandler(watcher_Created);
+            watcher.Renamed += new RenamedEventHandler(watcher_Renamed);
             watcher.EnableRaisingEvents = true;
             watcher.IncludeSubdirectories = true;
 
@@ -40,6 +41,7 @@ namespace Project_Watcher
             while (Console.Read() != 'q')
             { }
         }
+
 
         static bool _doubledFlag = false;
 
@@ -55,7 +57,9 @@ namespace Project_Watcher
 
             CreateDirectory(System.IO.Path.GetDirectoryName(FileName));
 
-            System.IO.File.Create(FileName).Close();
+            var file = System.IO.File.Create(FileName);
+            //file.Write(new [] {(byte)0}, 0, 1);
+            file.Close();
 
             Log("Create file : " + FileName);
         }
@@ -75,6 +79,16 @@ namespace Project_Watcher
             File.Copy(SrcName, DestName, true);
 
             Log("File copied : " + DestName);
+        }
+
+        private static void DeleteFile(string DestName)
+        {
+            if (System.IO.File.Exists(DestName))
+            {
+                File.Delete(DestName);
+
+                Log("File deleted : " + DestName);
+            }
         }
 
         private static string [] ReadSettings(out string SrcProject, out string DestPath)
@@ -134,15 +148,18 @@ namespace Project_Watcher
         {
             if (!CheckFileExt(FileName)) return;
 
-            if (_doubledFlag)
+            if (RebuildType == Program.RebuildType.Changed)
             {
-                _doubledFlag = false;
+                if (_doubledFlag)
+                {
+                    _doubledFlag = false;
 
-                return;
-            }
-            else
-            {
-                _doubledFlag = true;
+                    return;
+                }
+                else
+                {
+                    _doubledFlag = true;
+                }
             }
 
             string localName = destPath + FileName.Replace(srcPath, "");
@@ -150,20 +167,14 @@ namespace Project_Watcher
             switch (RebuildType)
             { 
                 case Program.RebuildType.Changed:
+                case Program.RebuildType.Created:
                     CreateFile(localName);
                     CopyFile(FileName, localName);
                     break;
-                case Program.RebuildType.Created:
-                    CreateFile(localName, true);
-                    break;
-                /*
                 case Program.RebuildType.Deleted:
-                    if (System.IO.File.Exists(localName))
-                        File.Delete(localName);
+                    DeleteFile(localName);
                     break;
-                 */
             }
-
         }
 
         static void watcher_Changed(object sender, FileSystemEventArgs e)
@@ -176,13 +187,18 @@ namespace Project_Watcher
             ReBuild(e.FullPath, RebuildType.Created);
         }
 
-        /*
+        static void watcher_Renamed(object sender, RenamedEventArgs e)
+        {
+            ReBuild(e.FullPath, RebuildType.Created);
+            ReBuild(e.OldFullPath, RebuildType.Deleted);
+        }
+
         static void watcher_Deleted(object sender, FileSystemEventArgs e)
         {
             ReBuild(e.FullPath, RebuildType.Deleted);
         }
-         * 
-         * private bool FileCompare(string file1, string file2)
+/*
+private bool FileCompare(string file1, string file2)
 {
      int file1byte;
      int file2byte;
